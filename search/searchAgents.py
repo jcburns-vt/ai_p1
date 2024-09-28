@@ -407,7 +407,7 @@ def cornersHeuristic(state, problem):
         if (euclid_dist(current_pos, c) < euclid_dist(current_pos, closest_corner)):
             closest_corner = c
 
-    return euclid_dist(current_pos, closest_corner)
+    return util.manhattanDistance(current_pos, closest_corner)
 
 import math
 
