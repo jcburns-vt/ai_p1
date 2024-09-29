@@ -511,7 +511,20 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+
+    foodGrid = foodGrid.asList()
+
+    if len(foodGrid) == 0: return 0
+
+    min = foodGrid[0]
+    mindist = util.manhattanDistance(position, min)
+    for food in foodGrid:
+        dist = util.manhattanDistance(position, food)
+        if dist < util.manhattanDistance(position, min):
+            min = food
+            mindist = dist
+
+    return mindist
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -542,7 +555,55 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        food = food.asList()
+
+        if len(food) == 0: return 'Stop'
+
+        # determine closest food
+        closest_food = food[0]
+        for f in food:
+            if mazeDistance(startPosition, f, gameState) < mazeDistance(startPosition, closest_food, gameState):
+                closest_food = f
+
+        # derive path to closest food
+        queue = util.Queue()
+        visited = []
+
+        # place start node on the stack
+        queue.push((startPosition, []))
+
+        # traverse the graph until nothing remains on the stack
+        while not queue.isEmpty():
+
+            # current node and the cummulative path taken to reach this position
+            current_node, path_to_current = queue.pop()
+
+            # check that current node hasnt already been visited before expanding it
+            if current_node in visited:
+                continue
+
+            # mark visited
+            visited.append(current_node)
+
+            # check if this node is goal
+            if current_node == closest_food: 
+                return path_to_current
+
+            # expand node
+            successors = problem.getSuccessors(current_node)
+
+            # check if successors have been visited. if not, add to queue
+            for s in successors:
+
+                if s[0] in visited:
+                    pass
+
+                else:
+                    # queue each unvisited successor with the path to get there
+                    queue.push((s[0], path_to_current + [s[1]]))
+
+        return  ['stop']
+
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
